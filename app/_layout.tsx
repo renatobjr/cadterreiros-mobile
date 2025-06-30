@@ -1,29 +1,37 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import 'react-native-reanimated';
+import { useAuthStore } from "@/store/authStore";
+import * as eva from "@eva-design/eva";
+import { ApplicationProvider } from "@ui-kitten/components";
+import { Stack } from "expo-router";
+import { useEffect, useState } from "react";
+import { default as theme } from "../cadterreiros-theme.json";
 
-import { useColorScheme } from '@/hooks/useColorScheme';
+const RootLayout = () => {
+  const checkAuth = useAuthStore((state) => state.checkAuth);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-export default function RootLayout() {
-  const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-  });
-
-  if (!loaded) {
-    // Async font loading only occurs in development.
-    return null;
-  }
+  useEffect(() => {
+    const authenticate = async () => {
+      const result = await checkAuth();
+      setIsAuthenticated(result);
+    };
+    authenticate();
+  }, [checkAuth]);
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+    <>
+      <ApplicationProvider {...eva} theme={{ ...eva.light, ...theme }}>
+        <Stack>
+          <Stack.Protected guard={isAuthenticated}>
+            <Stack.Screen name="(app)" options={{ headerShown: false }} />
+          </Stack.Protected>
+
+          <Stack.Protected guard={!isAuthenticated}>
+            <Stack.Screen name="sign-in" options={{ headerShown: false }} />
+          </Stack.Protected>
+        </Stack>
+      </ApplicationProvider>
+    </>
   );
-}
+};
+
+export default RootLayout;
