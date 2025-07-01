@@ -11,12 +11,16 @@ const RootLayout = () => {
   const { isAuth, isLoading, checkAuth } = useAuthStore();
   
   useEffect(() => {
-    checkAuth();
+    const performAuthCheck = async () => {
+      await checkAuth();
 
-    if (!isLoading) {
-      SplashScreen.hideAsync();
-    }
-  }, [checkAuth, isLoading]);
+      if (!isLoading) {
+        SplashScreen.hideAsync();
+      }
+    };
+
+    performAuthCheck();
+  }, []); 
 
   return (
     <ApplicationProvider {...eva} theme={{ ...eva.light, ...theme }}>

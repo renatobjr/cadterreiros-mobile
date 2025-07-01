@@ -1,13 +1,21 @@
-import { Tabs } from "expo-router";
+import { router, Tabs } from "expo-router";
 
+import { useAuthStore } from "@/store/authStore";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
 export default function TabLayout() {
+  const { isAuth, checkAuth } = useAuthStore();
+
   return (
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: "#000",
-        
+      }}
+      screenListeners={{
+        tabPress: (e) => {
+          checkAuth();
+          if (!isAuth) router.push("/sign-in");
+        },
       }}
     >
       <Tabs.Screen
@@ -29,9 +37,7 @@ export default function TabLayout() {
           title: "Cadastrar Terreiro",
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
-              name={
-                focused ? "add-circle" : "add-circle-outline"
-              }
+              name={focused ? "add-circle" : "add-circle-outline"}
               color={color}
               size={24}
             />

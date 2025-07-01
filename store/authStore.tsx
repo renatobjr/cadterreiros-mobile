@@ -2,8 +2,8 @@ import authService from "@/service/auth.service";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { create } from "zustand";
 
-const TOKEN_KEY = "@auth_token";
-const USER_KEY = "@auth_user";
+const TOKEN_KEY = process.env.EXPO_PUBLIC_TOKEN_KEY as string;
+const USER_KEY = process.env.EXPO_PUBLIC_USER_KEY as string;
 
 type State = {
   user: any;
@@ -17,7 +17,7 @@ type Actions = {
   login: (
     email: string,
     password: string
-  ) => Promise<{ success: boolean; error?: string }>;
+  ) => Promise<{ status: boolean; data: any }>;
   logout: () => Promise<void>;
   register: (email: string, password: string) => Promise<void>;
   checkAuth: () => void;
@@ -35,26 +35,37 @@ export const useAuthStore = create<State & Actions>((set) => ({
       set({ isLoading: true });
 
       const response = await authService.login(email, password);
-      const { user, token } = response.data;
 
-      await AsyncStorage.setItem(TOKEN_KEY, token);
-      await AsyncStorage.setItem(USER_KEY, JSON.stringify(user));
+      if (response.status) {
+        await AsyncStorage.setItem(TOKEN_KEY, response.data.token);
+        await AsyncStorage.setItem(
+          USER_KEY,
+          JSON.stringify(response.data.user)
+        );
 
-      set({ user, token, isAuth: true, isLoading: false, error: undefined });
+        set({
+          user: response.data.user,
+          token: response.data.token,
+          isAuth: true,
+          isLoading: false,
+          error: undefined,
+        });
 
-      return { success: true };
+        return { status: true, data: response.data };
+      }
+
+      set({ isLoading: false });
+      return { status: false, data: null };
     } catch (error: any) {
-      console.error(error);
-
       set({
         isLoading: false,
         isAuth: false,
         token: undefined,
         user: null,
-        error: "Falha ao fazer login",
+        error: error.message,
       });
 
-      return { success: false, error: "Falha ao fazer login" };
+      return { status: false, data: null };
     }
   },
 
@@ -88,37 +99,27 @@ export const useAuthStore = create<State & Actions>((set) => ({
   },
 
   checkAuth: async () => {
-    try {
-      const token = await AsyncStorage.getItem(TOKEN_KEY);
-      const userString = await AsyncStorage.getItem(USER_KEY);
+    const token = await AsyncStorage.getItem(TOKEN_KEY);
+    const userString = await AsyncStorage.getItem(USER_KEY);
 
-      if (token && userString) {
-        const response = await authService.validateToken(token);
-        const user = response.data.user;
+    if (token && userString) {
+      const response = await authService.validateToken(token);
 
+      if (!response.status) {
+        await AsyncStorage.removeItem(TOKEN_KEY);
+        await AsyncStorage.removeItem(USER_KEY);
         set({
-          user,
-          token,
-          isAuth: true,
+          user: null,
+          token: undefined,
+          isAuth: false,
           isLoading: false,
           error: undefined,
         });
+        return false;
       }
-    } catch (error) {
-      console.error("Erro ao restaurar sessão:", error);
 
-      await AsyncStorage.removeItem(TOKEN_KEY);
-      await AsyncStorage.removeItem(USER_KEY);
-
-      set({
-        user: null,
-        token: undefined,
-        isAuth: false,
-        isLoading: false,
-        error: "Erro ao restaurar sessão",
-      });
-
-      return false;
+      set({ isAuth: true });
+      return true;
     }
   },
 }));

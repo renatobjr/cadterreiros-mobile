@@ -6,6 +6,7 @@ import { Image } from "expo-image";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import {
+  Alert,
   ImageProps,
   KeyboardAvoidingView,
   Platform,
@@ -28,10 +29,16 @@ const Signin = () => {
 
   const handlerLogin = async () => {
     const response = await login(email, password);
-    
-    if (response.success) {
+
+    if (response.status) {
       router.navigate("/(app)/home");
+      return;
     }
+
+    Alert.alert(
+      "Erro de Login",
+      "Credenciais inválidas. Por favor, tente novamente."
+    );
   };
 
   const toogleSecureEntry = (): void => {
