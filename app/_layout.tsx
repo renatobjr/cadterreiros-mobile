@@ -1,36 +1,33 @@
 import { useAuthStore } from "@/store/authStore";
 import * as eva from "@eva-design/eva";
 import { ApplicationProvider } from "@ui-kitten/components";
-import { Stack } from "expo-router";
-import { useEffect, useState } from "react";
+import { SplashScreen, Stack } from "expo-router";
+import { useEffect } from "react";
 import { default as theme } from "../cadterreiros-theme.json";
 
-const RootLayout = () => {
-  const checkAuth = useAuthStore((state) => state.checkAuth);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+SplashScreen.preventAutoHideAsync();
 
+const RootLayout = () => {
+  const { isAuth, isLoading, checkAuth } = useAuthStore();
+  
   useEffect(() => {
-    const authenticate = async () => {
-      const result = await checkAuth();
-      setIsAuthenticated(result);
-    };
-    authenticate();
-  }, [checkAuth]);
+    checkAuth();
+
+    if (!isLoading) {
+      SplashScreen.hideAsync();
+    }
+  }, [checkAuth, isLoading]);
 
   return (
-    <>
-      <ApplicationProvider {...eva} theme={{ ...eva.light, ...theme }}>
-        <Stack>
-          <Stack.Protected guard={isAuthenticated}>
-            <Stack.Screen name="(app)" options={{ headerShown: false }} />
-          </Stack.Protected>
-
-          <Stack.Protected guard={!isAuthenticated}>
-            <Stack.Screen name="sign-in" options={{ headerShown: false }} />
-          </Stack.Protected>
-        </Stack>
-      </ApplicationProvider>
-    </>
+    <ApplicationProvider {...eva} theme={{ ...eva.light, ...theme }}>
+      <Stack screenOptions={{ headerShown: false }}>
+        {!isAuth ? (
+          <Stack.Screen name="sign-in" options={{ headerShown: false }} />
+        ) : (
+          <Stack.Screen name="(app)" options={{ headerShown: false }} />
+        )}
+      </Stack>
+    </ApplicationProvider>
   );
 };
 

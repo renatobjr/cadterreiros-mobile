@@ -1,27 +1,25 @@
-import { useAuthStore } from "@/store/authStore";
-import { Button } from "@ui-kitten/components";
-import { router } from "expo-router";
-import { Text, View } from "react-native";
+import { Layout, Text } from "@ui-kitten/components";
+import { StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const Home = () => {
-  const logout = useAuthStore((state) => state.logout);
 
   return (
-    <SafeAreaView>
-      <View>
-        <Text>Home</Text>
-        <Button
-          onPress={() => {
-            logout();
-            router.navigate("/sign-in");
-          }}
-        >
-          Logout
-        </Button>
-      </View>
+    <SafeAreaView style={styles.container}>
+      <Layout>
+        <Text>Lista de atividades</Text>
+      </Layout>
     </SafeAreaView>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 16,
+    justifyContent: "flex-start",
+    alignItems: "center",
+  },
+});
 
 export default Home;

@@ -28,11 +28,9 @@ const Signin = () => {
 
   const handlerLogin = async () => {
     const response = await login(email, password);
-
     
     if (response.success) {
-      console.log(response);
-      router.navigate('/home');
+      router.navigate("/(app)/home");
     }
   };
 
@@ -54,20 +52,20 @@ const Signin = () => {
   );
 
   const LoadingIndicator = (props: ImageProps): React.ReactElement => (
-    <View style={[props.style, style.indicator]}>
+    <View style={[props.style, styles.indicator]}>
       <Spinner status="basic" size="small" />
     </View>
   );
 
   return (
-    <KeyboardAvoidingView style={style.container} behavior={setPlatform}>
-      <SafeAreaView style={style.container}>
+    <KeyboardAvoidingView style={styles.container} behavior={setPlatform}>
+      <SafeAreaView style={styles.container}>
         <Image
           contentFit="contain"
-          style={style.imageContainer}
+          style={styles.imageContainer}
           source={loginImage}
         />
-        <Layout style={style.inputContainer} level="1">
+        <Layout style={styles.inputContainer} level="1">
           <Input
             value={email}
             accessoryRight={renderEmailIcon}
@@ -85,7 +83,7 @@ const Signin = () => {
           />
         </Layout>
 
-        <Layout style={style.buttonContainer}>
+        <Layout style={styles.buttonContainer}>
           <Button
             accessoryRight={isLoad ? () => <LoadingIndicator /> : undefined}
             disabled={!email || !password}
@@ -106,7 +104,7 @@ const Signin = () => {
   );
 };
 
-const style = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
