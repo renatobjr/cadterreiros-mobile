@@ -18,7 +18,6 @@ const RootLayout = () => {
     const performAuthCheck = async () => {
       await checkAuth();
     };
-
     performAuthCheck();
   }, []);
 
