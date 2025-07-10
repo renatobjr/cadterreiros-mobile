@@ -5,6 +5,7 @@ import ListMyRegisterItem from "@/components/home/listMyRegister.component";
 import { useAuthStore } from "@/store/authStore";
 import { useReligiousCommunityStore } from "@/store/religiousCommunityStore";
 import { Button, Layout, Text } from "@ui-kitten/components";
+import { router } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import { FlatList, StyleSheet, ToastAndroid } from "react-native";
 
@@ -71,6 +72,7 @@ const Home = () => {
             <Button
               style={{ borderRadius: 8 }}
               status="danger"
+              onPress={() => router.push("/register")}
             >
               Adicionar Terreiro
             </Button>
