@@ -1,15 +1,7 @@
-import { Layout, Text } from "@ui-kitten/components"
-import { SafeAreaView } from "react-native-safe-area-context"
+import ReligiousCommunityForm from "@/components/common/religiousCommunityForm.component";
 
 const Register = () => {
-  
-  return (
-    <SafeAreaView>
-      <Layout>
-        <Text>Register</Text>
-      </Layout>
-    </SafeAreaView>
-  )
-}
+  return <ReligiousCommunityForm />;
+};
 
-export default Register
+export default Register;

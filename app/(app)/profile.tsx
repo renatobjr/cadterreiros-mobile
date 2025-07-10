@@ -1,16 +1,12 @@
 import { useAuthStore } from "@/store/authStore";
-import { Text } from "@react-navigation/elements";
 import { Button, Layout } from "@ui-kitten/components";
 import { router } from "expo-router";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 const Profile = () => {
   const logout = useAuthStore((state) => state.logout);
 
   return (
-    <SafeAreaView>
-      <Layout>
-        <Text>Profile</Text>
+    <Layout level="4" style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <Button
           onPress={() => {
             logout();
@@ -19,8 +15,7 @@ const Profile = () => {
         >
           Logout
         </Button>
-      </Layout>
-    </SafeAreaView>
+    </Layout>
   );
 };
 

@@ -80,8 +80,6 @@ export const useAuthStore = create<State & Actions>((set) => ({
       isLoading: false,
       error: undefined,
     });
-
-    console.log("logout");
   },
 
   register: async (email: string, password: string) => {
@@ -101,24 +99,25 @@ export const useAuthStore = create<State & Actions>((set) => ({
   checkAuth: async () => {
     const token = await AsyncStorage.getItem(TOKEN_KEY);
     const userString = await AsyncStorage.getItem(USER_KEY);
-
+    
     if (token && userString) {
       const response = await authService.validateToken(token);
+      console.log("checkAuth", token, userString, response);
 
-      if (!response.status) {
-        await AsyncStorage.removeItem(TOKEN_KEY);
-        await AsyncStorage.removeItem(USER_KEY);
-        set({
-          user: null,
-          token: undefined,
-          isAuth: false,
-          isLoading: false,
-          error: undefined,
-        });
-        return false;
-      }
+      // if (!response.status) {
+      //   await AsyncStorage.removeItem(TOKEN_KEY);
+      //   await AsyncStorage.removeItem(USER_KEY);
+      //   set({
+      //     user: null,
+      //     token: undefined,
+      //     isAuth: false,
+      //     isLoading: false,
+      //     error: undefined,
+      //   });
+      //   return false;
+      // }
 
-      set({ isAuth: true });
+      set({ isAuth: true, user: response.data.user });
       return true;
     }
   },
