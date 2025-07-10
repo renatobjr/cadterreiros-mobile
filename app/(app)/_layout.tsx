@@ -6,7 +6,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { Button } from "@ui-kitten/components";
 
 export default function TabLayout() {
-  const { isAuth, checkAuth } = useAuthStore();
+  const { isAuth, checkAuth, logout } = useAuthStore();
   const { fetchCountByUserId, fetchListFromUserId } =
     useReligiousCommunityStore();
 
@@ -46,7 +46,10 @@ export default function TabLayout() {
                 appearance="filled"
                 status="info"
                 size="small"
-                onPress={() => console.log("oi")}
+                onPress={() => {
+                  logout();
+                  router.navigate("/sign-in");
+                }}
               >Logout</Button>
             );
           },
