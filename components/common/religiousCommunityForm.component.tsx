@@ -48,7 +48,7 @@ const ReligiousCommunityForm = ({ isEditing = false, onSubmit }: Props) => {
         zipcode: "",
       },
       communityType: "",
-      religiousSpaceYearFoundation: 0,
+      religiousSpaceYearFoundation: "",
       religiousSpaceLeaderFoundation: "",
       religiousSpaceNation: "",
       religiousSpacePraticalLanguages: "",
@@ -104,8 +104,11 @@ const ReligiousCommunityForm = ({ isEditing = false, onSubmit }: Props) => {
         currentCommunity?.[0];
       const imagePath = communityData?.religiousSpaceMainPicture;
       const imageSource =
-        imagePath && imagePath !== "undefined" ? `${imageUrl}/${imagePath}` : null;
+        imagePath && imagePath !== "undefined"
+          ? `${imageUrl}/${imagePath}`
+          : null;
       setImageSource(imageSource);
+      console.log(communityData);
 
       methods.reset(communityData as unknown as any);
     }
@@ -121,20 +124,24 @@ const ReligiousCommunityForm = ({ isEditing = false, onSubmit }: Props) => {
     >
       <FormProvider {...methods}>
         <Layout level="4" style={styles.container}>
-          {isEditing && (imageSource || imageError) ? (
-            <View style={{ padding: 16 }}>
-              <Image
-                source={imageSource}
-                style={{ width: "100%", height: 400, borderRadius: 8 }}
-                contentFit="cover"
-                onError={() => setImageError(true)}
-              />
+          {isEditing && (
+            <View>
+              {isEditing && (imageSource || imageError) ? (
+                <View style={{ padding: 16 }}>
+                  <Image
+                    source={imageSource}
+                    style={{ width: "100%", height: 400, borderRadius: 8 }}
+                    contentFit="cover"
+                    onError={() => setImageError(true)}
+                  />
+                </View>
+              ) : (
+                <CameraUpload
+                  communityId={id as string}
+                  onUploaded={loadCommmunity}
+                />
+              )}
             </View>
-          ) : (
-            <CameraUpload
-              communityId={id as string}
-              onUploaded={loadCommmunity}
-            />
           )}
           <Authorization isEditing={isEditing} />
           <CommunityGoogleApiLocalization isEditing={isEditing} />

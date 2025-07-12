@@ -25,6 +25,7 @@ const Bio = ({ bio }: Props) => {
 const styles = StyleSheet.create({
   bio: {
     padding: 16,
+    marginBottom: 50,
   },
 });
 

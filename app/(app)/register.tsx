@@ -13,7 +13,7 @@ const Register = () => {
       return;
     }
   };
-  return <ReligiousCommunityForm onSubmit={onHandleSubmit}/>;
+  return <ReligiousCommunityForm isEditing={false} onSubmit={onHandleSubmit}/>;
 
 };
 
