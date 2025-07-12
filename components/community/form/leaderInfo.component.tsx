@@ -23,7 +23,6 @@ const LeaderInfo = ({ isEditing = false }: Props) => {
   const {
     control,
     formState: { errors },
-    watch,
   } = useFormContext();
 
   const [selectLeaderEthnicity, setLeaderEthnicity] = React.useState<IndexPath>(
@@ -72,7 +71,6 @@ const LeaderInfo = ({ isEditing = false }: Props) => {
     ELeaderSocialProgram.TARIFA_SOCIAL_ENERGIA,
   ];
 
-  // Função para formatar o valor exibido no Select multiSelect
   const getSelectedSocialProgramsText = () => {
     if (selectLeaderSocialProgram.length === 0) {
       return "Selecione os programas";
