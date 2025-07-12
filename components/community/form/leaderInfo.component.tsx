@@ -161,15 +161,16 @@ const LeaderInfo = ({ isEditing = false }: Props) => {
               size="large"
               placeholder="Raça"
               selectedIndex={
-                leaderEthnicity
-                  ? new IndexPath(enumLeaderEthnicity.indexOf(leaderEthnicity))
+                enumLeaderEthnicity.indexOf(leaderEthnicity) >= 0
+                  ? new IndexPath(
+                      enumLeaderEthnicity.indexOf(leaderEthnicity),
+                      0
+                    )
                   : undefined
               }
               value={
                 leaderEthnicity
-                  ? StringUtils.capitalize(
-                      enumLeaderEthnicity[selectLeaderEthnicity.row]
-                    )
+                  ? StringUtils.capitalize(leaderEthnicity)
                   : undefined
               }
               onSelect={(index) => {
@@ -211,16 +212,12 @@ const LeaderInfo = ({ isEditing = false }: Props) => {
               size="large"
               placeholder="Sexo"
               selectedIndex={
-                leaderGender
-                  ? new IndexPath(enumLeaderGender.indexOf(leaderGender))
+                enumLeaderGender.indexOf(leaderGender) >= 0
+                  ? new IndexPath(enumLeaderGender.indexOf(leaderGender), 0)
                   : undefined
               }
               value={
-                leaderGender
-                  ? StringUtils.capitalize(
-                      enumLeaderGender[selectLeaderGender.row]
-                    )
-                  : undefined
+                leaderGender ? StringUtils.capitalize(leaderGender) : undefined
               }
               onSelect={(index) => {
                 setLeaderGender(index as IndexPath);
@@ -261,19 +258,18 @@ const LeaderInfo = ({ isEditing = false }: Props) => {
               size="large"
               placeholder="Grau de escolaridade"
               selectedIndex={
-                leaderEducationalLevel
+                enumLeaderEducationalLevel.indexOf(leaderEducationalLevel) >= 0
                   ? new IndexPath(
-                      enumLeaderEducationalLevel.indexOf(leaderEducationalLevel)
+                      enumLeaderEducationalLevel.indexOf(
+                        leaderEducationalLevel
+                      ),
+                      0
                     )
                   : undefined
               }
               value={
                 leaderEducationalLevel
-                  ? StringUtils.capitalize(
-                      enumLeaderEducationalLevel[
-                        selectLeaderEducationalLevel.row
-                      ]
-                    )
+                  ? StringUtils.capitalize(leaderEducationalLevel)
                   : undefined
               }
               onSelect={(index) => {

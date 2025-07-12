@@ -3,7 +3,7 @@ import { useReligiousCommunityStore } from "@/store/religiousCommunityStore";
 import { Button, Layout, Spinner } from "@ui-kitten/components";
 import { router } from "expo-router";
 import "moment/locale/pt-br";
-import React from "react";
+import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { ImageProps, StyleSheet, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
@@ -75,11 +75,15 @@ const ReligiousCommunityForm = ({ isEditing = false }: Props) => {
     const response = await religiousCommunitiesService.createReligiousCommunity(data);
 
     if (response.status) {
-      router.push(`/community/${response.data}/upload-main-picture`);
+      router.push(`/community/${response.data._id}/upload-main-picture`);
       return;
     }
     setIsLoading(false);
   };
+
+  useEffect(() => {
+    if(!isEditing) methods.reset();
+  }, [isEditing]);
 
   return (
     <KeyboardAwareScrollView

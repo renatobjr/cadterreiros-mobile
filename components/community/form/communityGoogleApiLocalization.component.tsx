@@ -1,7 +1,7 @@
 import CapitionError from "@/components/common/capitionError.component";
 import { useGoogleAutocomplete } from "@appandflow/react-native-google-autocomplete";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { Input, List, ListItem, Text } from "@ui-kitten/components";
+import { Input, Text } from "@ui-kitten/components";
 import { Controller, useFormContext } from "react-hook-form";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { Masks, useMaskedInputProps } from "react-native-mask-input";
@@ -11,6 +11,10 @@ type Props = {
 };
 
 const CommunityGoogleApiLocalization = ({ isEditing = false }: Props) => {
+  const GOOGLE_MAPS_API_KEY = process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY;
+
+  console.log(process.env);
+
   const {
     control,
     setValue,
@@ -18,9 +22,10 @@ const CommunityGoogleApiLocalization = ({ isEditing = false }: Props) => {
   } = useFormContext();
 
   const { locationResults, setTerm, clearSearch, searchDetails, term } =
-    useGoogleAutocomplete("AIzaSyDUsN2b7eBnkeG78j3Fc71fkketGKrGcGU", {
-      language: "en",
+    useGoogleAutocomplete(GOOGLE_MAPS_API_KEY as string, {
+      language: "pt-BR",
       debounce: 300,
+      queryTypes: "address",
     });
 
   const handleAddressSelection = async (placeId: string) => {
@@ -96,7 +101,7 @@ const CommunityGoogleApiLocalization = ({ isEditing = false }: Props) => {
   };
 
   const MaskCepProps = useMaskedInputProps({
-    mask: Masks.ZIP_CODE
+    mask: Masks.ZIP_CODE,
   });
 
   return (
@@ -126,27 +131,22 @@ const CommunityGoogleApiLocalization = ({ isEditing = false }: Props) => {
         )}
       />
       {locationResults.length > 0 ? (
-        <List
-          style={styles.placesContainer}
-          data={locationResults.slice(0, 5)}
-          renderItem={({ item: address, index: i }) => (
-            <ListItem
-              title={() => (
-                <Text style={{ fontWeight: "bold" }}>
-                  {address.structured_formatting.main_text}
-                </Text>
-              )}
-              description={() => (
-                <Text style={{ fontWeight: "normal" }}>
-                  {address.structured_formatting.secondary_text}
-                </Text>
-              )}
-              onPress={async () => {
-                handleAddressSelection(address.place_id);
-              }}
-            />
-          )}
-        />
+        <View style={styles.placesContainer}>
+          {locationResults.slice(0, 5).map((address, i) => (
+            <TouchableOpacity
+              key={address.place_id}
+              onPress={() => handleAddressSelection(address.place_id)}
+              style={{ paddingVertical: 8 }}
+            >
+              <Text style={{ fontWeight: "bold" }}>
+                {address.structured_formatting.main_text}
+              </Text>
+              <Text style={{ fontWeight: "normal" }}>
+                {address.structured_formatting.secondary_text}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
       ) : (
         <></>
       )}
@@ -194,6 +194,7 @@ const CommunityGoogleApiLocalization = ({ isEditing = false }: Props) => {
           render={({ field: { onChange, value } }) => (
             <Input
               size="large"
+              textStyle={{ fontSize: 14 }}
               style={{ flex: 1 }}
               placeholder="Número"
               value={value}
@@ -326,16 +327,9 @@ const CommunityGoogleApiLocalization = ({ isEditing = false }: Props) => {
         <Controller
           control={control}
           name="communityAddress.zipcode"
-          rules={
-            isEditing
-              ? {
-                  required: "O CEP é obrigatório",
-                }
-              : {}
-          }
+          rules={{ required: "O CEP é obrigatório" }}
           render={({ field: { onChange, value } }) => (
             <Input
-              { ...MaskCepProps }
               maxLength={9}
               size="large"
               style={{ flex: 2 }}
@@ -355,7 +349,6 @@ const CommunityGoogleApiLocalization = ({ isEditing = false }: Props) => {
                   <></>
                 )
               }
-              
             />
           )}
         />
@@ -370,7 +363,8 @@ const styles = StyleSheet.create({
   },
   placesContainer: {
     padding: 16,
-    borderRadius: 8,
+    borderRadius: 10,
+    backgroundColor: "#fff",
   },
   formTitle: {
     fontWeight: "700",

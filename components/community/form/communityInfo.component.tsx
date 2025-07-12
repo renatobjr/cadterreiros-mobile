@@ -145,9 +145,12 @@ const CommunityInfo = ({ isEditing = false }: Props) => {
               size="large"
               placeholder="Cargo da liderança"
               selectedIndex={
-                religiousPositionName
+                enumReligiousPosiontionName.indexOf(religiousPositionName) >= 0
                   ? new IndexPath(
-                      enumReligiousPosiontionName.indexOf(religiousPositionName)
+                      enumReligiousPosiontionName.indexOf(
+                        religiousPositionName
+                      ),
+                      0
                     )
                   : undefined
               }
@@ -189,13 +192,14 @@ const CommunityInfo = ({ isEditing = false }: Props) => {
       <Controller
         control={control}
         name="communityType"
+        rules={{ required: "O tipo de comunidade é obrigatório" }}
         render={({ field: { onChange, value } }) => (
           <Select
             size="large"
             placeholder="Tipo de comunidade"
             selectedIndex={
-              communityType
-                ? new IndexPath(enumCommunityTypes.indexOf(communityType))
+              enumCommunityTypes.indexOf(communityType) >= 0
+                ? new IndexPath(enumCommunityTypes.indexOf(communityType), 0)
                 : undefined
             }
             value={
@@ -229,14 +233,16 @@ const CommunityInfo = ({ isEditing = false }: Props) => {
       <Controller
         control={control}
         name="religiousSpaceNation"
+        rules={{ required: "A nação/linhas é obrigatório" }}
         render={({ field: { onChange, value } }) => (
           <Select
             size="large"
             placeholder="Nação"
             selectedIndex={
-              religiousSpaceNation
+              enumReligiousSpaceNations.indexOf(religiousSpaceNation) >= 0
                 ? new IndexPath(
-                    enumReligiousSpaceNations.indexOf(religiousSpaceNation)
+                    enumReligiousSpaceNations.indexOf(religiousSpaceNation),
+                    0
                   )
                 : undefined
             }
@@ -281,11 +287,14 @@ const CommunityInfo = ({ isEditing = false }: Props) => {
             size="large"
             placeholder="Língua"
             selectedIndex={
-              religiousPraticalLanguage
+              enumReligiousPraticalLanguages.indexOf(
+                religiousPraticalLanguage
+              ) >= 0
                 ? new IndexPath(
                     enumReligiousPraticalLanguages.indexOf(
                       religiousPraticalLanguage
-                    )
+                    ),
+                    0
                   )
                 : undefined
             }
@@ -366,6 +375,18 @@ const CommunityInfo = ({ isEditing = false }: Props) => {
             placeholder="Nome do fundador"
             value={value}
             onChangeText={onChange}
+            status={errors.religiousSpaceLeaderFoundation ? "danger" : "basic"}
+            caption={() =>
+              (errors.religiousSpaceLeaderFoundation as any)?.message ? (
+                <CapitionError
+                  message={
+                    (errors.religiousSpaceLeaderFoundation as any)?.message
+                  }
+                />
+              ) : (
+                <></>
+              )
+            }
           />
         )}
       />
@@ -385,6 +406,18 @@ const CommunityInfo = ({ isEditing = false }: Props) => {
             placeholder="Nome de quem iniciou a liderança"
             value={value}
             onChangeText={onChange}
+            status={errors.religiousSpaceStartedBy ? "danger" : "basic"}
+            caption={() =>
+              (errors.religiousSpaceStartedBy as any)?.message ? (
+                <CapitionError
+                  message={
+                    (errors.religiousSpaceStartedBy as any)?.message
+                  }
+                />
+              ) : (
+                <></>
+              )
+            }
           />
         )}
       />
@@ -399,7 +432,7 @@ const CommunityInfo = ({ isEditing = false }: Props) => {
             date={
               religiousSpaceStartedByDate
                 ? moment(religiousSpaceStartedByDate)
-                : moment()
+                : undefined
             }
             dateService={dateService}
             onSelect={(nextDate) => {
@@ -409,6 +442,18 @@ const CommunityInfo = ({ isEditing = false }: Props) => {
             size="large"
             min={moment("1900-01-01")}
             max={moment()}
+            status={errors.religiousSpaceNameDateStartedBy ? "danger" : "basic"}
+            caption={() =>
+              (errors.religiousSpaceNameDateStartedBy as any)?.message ? (
+                <CapitionError
+                  message={
+                    (errors.religiousSpaceNameDateStartedBy as any)?.message
+                  }
+                />
+              ) : (
+                <></>
+              )
+            }
           />
         )}
       />

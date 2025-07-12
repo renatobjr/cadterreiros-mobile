@@ -60,7 +60,7 @@ const ViewCommunity = () => {
           <Loading />
         </View>
       ) : (
-        <ScrollView>
+        <ScrollView style={styles.scrollView}>
           <HeaderView
             religiousSpaceName={currentCommunity?.religiousSpaceName}
             religiousSpaceLeaderName={
@@ -132,7 +132,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "flex-start",
-    marginBottom: Dimensions.get("window").height * 0.1,
   },
   spinnerContainer: {
     justifyContent: "center",
