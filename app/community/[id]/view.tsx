@@ -5,7 +5,7 @@ import Bio from "@/components/community/bioCommunity.component";
 import CameraUpload from "@/components/community/cameraUpload.component";
 import HeaderView from "@/components/community/headerView.component";
 import { useReligiousCommunityStore } from "@/store/religiousCommunityStore";
-import { Layout, useTheme } from "@ui-kitten/components";
+import { Layout } from "@ui-kitten/components";
 import { Image } from "expo-image";
 import { useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
@@ -19,7 +19,6 @@ import {
 import MapView, { Marker } from "react-native-maps";
 
 const ViewCommunity = () => {
-  const theme = useTheme();
   const imageUrl = process.env.EXPO_PUBLIC_IMAGE_API;
 
   const [imageError, setImageError] = useState(false);

@@ -10,6 +10,11 @@ const ApiConfig = {
     const response = await axios.post(url, data, config);
     return response.data;
   },
+
+  put: async (url: string, data?: any, config?: any) => {
+    const response = await axios.put(url, data, config);
+    return response.data;
+  },
 };
 
 export default ApiConfig;

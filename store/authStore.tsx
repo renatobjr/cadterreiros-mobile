@@ -102,20 +102,19 @@ export const useAuthStore = create<State & Actions>((set) => ({
     
     if (token && userString) {
       const response = await authService.validateToken(token);
-      console.log("checkAuth", token, userString, response);
 
-      // if (!response.status) {
-      //   await AsyncStorage.removeItem(TOKEN_KEY);
-      //   await AsyncStorage.removeItem(USER_KEY);
-      //   set({
-      //     user: null,
-      //     token: undefined,
-      //     isAuth: false,
-      //     isLoading: false,
-      //     error: undefined,
-      //   });
-      //   return false;
-      // }
+      if (!response.status) {
+        await AsyncStorage.removeItem(TOKEN_KEY);
+        await AsyncStorage.removeItem(USER_KEY);
+        set({
+          user: null,
+          token: undefined,
+          isAuth: false,
+          isLoading: false,
+          error: undefined,
+        });
+        return false;
+      }
 
       set({ isAuth: true, user: response.data.user });
       return true;

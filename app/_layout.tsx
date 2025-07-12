@@ -53,7 +53,7 @@ const RootLayout = () => {
       }}
       customMapping={customMapping}
     >
-      <Stack screenOptions={{ headerShown: false }}>
+      <Stack screenOptions={{ headerShown: false, statusBarStyle: "dark" }}>
         {!isAuth ? (
           <Stack.Screen name="(auth)" options={{ headerShown: false }} />
         ) : (

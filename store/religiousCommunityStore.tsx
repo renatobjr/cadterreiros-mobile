@@ -10,7 +10,7 @@ type CountReligiousCommunities = {
 
 type State = {
   currentCommunityId: string | null;
-  currentCommunity?: IReligiousCommunity | undefined;
+  currentCommunity?: IReligiousCommunity[] | undefined;
   isLoading: boolean;
   listByUserId: any[];
   error: string | undefined;
@@ -20,7 +20,7 @@ type Actions = {
   fetchCountByUserId: () => Promise<CountReligiousCommunities | null>;
   fetchListFromUserId: () => Promise<void>;
   fecthCommunity: (id: string | string[]) => Promise<IReligiousCommunity | undefined>;
-  setCurrentCommunity(currentCommunity: IReligiousCommunity): void;
+  setCurrentCommunity(currentCommunity: IReligiousCommunity[]): void;
 };
 
 export const useReligiousCommunityStore = create<State & Actions>(

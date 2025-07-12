@@ -1,10 +1,12 @@
 import { IReligiousCommunity } from "@/@types/religiousCommunity.type";
 import Loading from "@/components/common/loading.component";
+import ReligiousCommunityForm from "@/components/common/religiousCommunityForm.component";
+import religiousCommunitiesService from "@/service/religiousCommunities.service";
 import { useReligiousCommunityStore } from "@/store/religiousCommunityStore";
-import { Layout, Text } from "@ui-kitten/components";
-import { useLocalSearchParams } from "expo-router";
+import { Layout } from "@ui-kitten/components";
+import { router, useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
-import { StyleSheet, ToastAndroid } from "react-native";
+import { StyleSheet, ToastAndroid, View } from "react-native";
 
 const EditCommunity = () => {
   const { fecthCommunity, isLoading } = useReligiousCommunityStore();
@@ -28,6 +30,19 @@ const EditCommunity = () => {
     }
   }, [id, fecthCommunity]);
 
+  const onHandleSubmit = async (payload: any) => {
+    const response = await religiousCommunitiesService.updateReligiousCommunity(
+      id as string,
+      payload
+    )
+
+    if (response.status) {
+      ToastAndroid.show("Comunidade atualizada com sucesso", ToastAndroid.SHORT);
+      setCurrentCommunity(response.data);
+      router.push("/(app)/home")
+    }
+  }
+
   useEffect(() => {
     loadCommmunity();
   }, [loadCommmunity]);
@@ -39,7 +54,9 @@ const EditCommunity = () => {
           <Loading />
         </Layout>
       ) : (
-        <Text>Editar comunidade</Text>
+        <View style={{ flex: 1, marginBottom: 50 }}>
+          <ReligiousCommunityForm isEditing onSubmit={onHandleSubmit}/>
+        </View>
       )}
     </Layout>
   );

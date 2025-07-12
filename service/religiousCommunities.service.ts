@@ -30,6 +30,14 @@ const religiousCommunitiesService = {
     return response.data;
   },
 
+  updateReligiousCommunity: async (id: string, payload: any) => {
+    const response = await ApiConfig.put(
+      `${religiousCommunitiesURL}/update-religious-community/${id}`,
+      payload
+    );
+    return response.data;
+  },
+
   uploadMainPicture: async (id: string, file: any) => {
     const formData = new FormData();
     formData.append("file", {

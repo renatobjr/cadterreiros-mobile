@@ -15,7 +15,7 @@ export interface IReligiousCommunity {
   religiousSpaceLeaderName: string;
   religiousSpacePositionName: string;
   religiousSpaceStartedBy: string;
-  religiousSpaceNameDateStartedBy: Date | string;
+  religiousSpaceNameDateStartedBy: Date | string | undefined;
   leaderContacts: IContacts;
   leaderEthnicity: string;
   leaderSexOrientation: string;

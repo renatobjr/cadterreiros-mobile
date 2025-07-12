@@ -9,8 +9,6 @@ const authService = {
       password,
     });
 
-    console.log("response", response);
-
     return response.data;
   },
   validateToken: async (token: string) => {

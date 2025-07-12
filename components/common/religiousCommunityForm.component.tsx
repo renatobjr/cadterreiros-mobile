@@ -1,12 +1,14 @@
-import religiousCommunitiesService from "@/service/religiousCommunities.service";
+import { IReligiousCommunity } from "@/@types/religiousCommunity.type";
 import { useReligiousCommunityStore } from "@/store/religiousCommunityStore";
 import { Button, Layout, Spinner } from "@ui-kitten/components";
-import { router } from "expo-router";
+import { Image } from "expo-image";
+import { useLocalSearchParams } from "expo-router";
 import "moment/locale/pt-br";
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { ImageProps, StyleSheet, View } from "react-native";
+import { ImageProps, StyleSheet, ToastAndroid, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import CameraUpload from "../community/cameraUpload.component";
 import Authorization from "../community/form/authorization.component";
 import CommunityGoogleApiLocalization from "../community/form/communityGoogleApiLocalization.component";
 import CommunityInfo from "../community/form/communityInfo.component";
@@ -14,17 +16,24 @@ import LeaderInfo from "../community/form/leaderInfo.component";
 
 type Props = {
   isEditing?: boolean;
+  onSubmit: (data: IReligiousCommunity) => void;
 };
 
-const ReligiousCommunityForm = ({ isEditing = false }: Props) => {
-  const {setCurrentCommunity, currentCommunity} = useReligiousCommunityStore();
+const ReligiousCommunityForm = ({ isEditing = false, onSubmit }: Props) => {
+  const imageUrl = process.env.EXPO_PUBLIC_IMAGE_API;
+  const { id } = useLocalSearchParams();
+
+  const { setCurrentCommunity, currentCommunity, fecthCommunity } =
+    useReligiousCommunityStore();
   const [isLoading, setIsLoading] = React.useState(false);
+  const [imageSource, setImageSource] = React.useState<string | null>(null);
+  const [imageError, setImageError] = React.useState(false);
 
   const methods = useForm({
     mode: "onSubmit",
     defaultValues: {
       searchAddress: "",
-      authorization: true,
+      authorization: false,
       communityGoogleApiLocalization: {
         lat: 0,
         long: 0,
@@ -39,7 +48,7 @@ const ReligiousCommunityForm = ({ isEditing = false }: Props) => {
         zipcode: "",
       },
       communityType: "",
-      religiousSpaceYearFoundation: "",
+      religiousSpaceYearFoundation: 0,
       religiousSpaceLeaderFoundation: "",
       religiousSpaceNation: "",
       religiousSpacePraticalLanguages: "",
@@ -47,7 +56,7 @@ const ReligiousCommunityForm = ({ isEditing = false }: Props) => {
       religiousSpaceLeaderName: "",
       religiousSpacePositionName: "",
       religiousSpaceStartedBy: "",
-      religiousSpaceNameDateStartedBy: "",
+      religiousSpaceNameDateStartedBy: undefined,
       leaderContacts: {
         phone: "",
         mobile: "",
@@ -68,22 +77,39 @@ const ReligiousCommunityForm = ({ isEditing = false }: Props) => {
     </View>
   );
 
-  const onSubmit = async (data: any) => {
+  const onHandleSubmit = async (data: any) => {
     setIsLoading(true);
-    setCurrentCommunity(data);
-
-    const response = await religiousCommunitiesService.createReligiousCommunity(data);
-
-    if (response.status) {
-      router.push(`/community/${response.data._id}/upload-main-picture`);
-      return;
-    }
+    onSubmit(data);
     setIsLoading(false);
   };
 
+  const loadCommmunity = useCallback(async () => {
+    if (id) {
+      try {
+        const response = await fecthCommunity(id);
+
+        if (response) {
+          setCurrentCommunity([response]);
+        }
+      } catch (error) {
+        console.error("Erro ao obter comunidade:", error);
+        ToastAndroid.show("Ops. Algo deu errado", ToastAndroid.SHORT);
+      }
+    }
+  }, [id, fecthCommunity, setCurrentCommunity]);
+
   useEffect(() => {
-    if(!isEditing) methods.reset();
-  }, [isEditing]);
+    if (isEditing && currentCommunity) {
+      const communityData: IReligiousCommunity | undefined =
+        currentCommunity?.[0];
+      const imagePath = communityData?.religiousSpaceMainPicture;
+      const imageSource =
+        imagePath && imagePath !== "undefined" ? `${imageUrl}/${imagePath}` : null;
+      setImageSource(imageSource);
+
+      methods.reset(communityData as unknown as any);
+    }
+  }, [isEditing, currentCommunity, methods, imageUrl]);
 
   return (
     <KeyboardAwareScrollView
@@ -95,6 +121,21 @@ const ReligiousCommunityForm = ({ isEditing = false }: Props) => {
     >
       <FormProvider {...methods}>
         <Layout level="4" style={styles.container}>
+          {isEditing && (imageSource || imageError) ? (
+            <View style={{ padding: 16 }}>
+              <Image
+                source={imageSource}
+                style={{ width: "100%", height: 400, borderRadius: 8 }}
+                contentFit="cover"
+                onError={() => setImageError(true)}
+              />
+            </View>
+          ) : (
+            <CameraUpload
+              communityId={id as string}
+              onUploaded={loadCommmunity}
+            />
+          )}
           <Authorization isEditing={isEditing} />
           <CommunityGoogleApiLocalization isEditing={isEditing} />
           <CommunityInfo isEditing={isEditing} />
@@ -105,9 +146,9 @@ const ReligiousCommunityForm = ({ isEditing = false }: Props) => {
             status="danger"
             style={{ marginTop: 40 }}
             disabled={isLoading}
-            onPress={methods.handleSubmit(onSubmit)}
+            onPress={methods.handleSubmit(onHandleSubmit)}
           >
-            Cadastrar
+            {isEditing ? "Editar comunidade" : "Criar comunidade"}
           </Button>
         </Layout>
       </FormProvider>
