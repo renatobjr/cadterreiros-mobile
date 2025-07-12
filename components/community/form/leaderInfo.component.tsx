@@ -23,6 +23,7 @@ const LeaderInfo = ({ isEditing = false }: Props) => {
   const {
     control,
     formState: { errors },
+    watch,
   } = useFormContext();
 
   const [selectLeaderEthnicity, setLeaderEthnicity] = React.useState<IndexPath>(
@@ -36,6 +37,10 @@ const LeaderInfo = ({ isEditing = false }: Props) => {
   const [selectLeaderSocialProgram, setLeaderSocialProgram] = React.useState<
     IndexPath[]
   >([]);
+
+  const leaderEthnicity = watch("leaderEthnicity");
+  const leaderGender = watch("leaderGender");
+  const leaderEducationalLevel = watch("leaderEducationalLevel");
 
   const enumLeaderEthnicity = [
     StringUtils.capitalize(ELeaderEthnicity.BRANCA),
@@ -155,10 +160,18 @@ const LeaderInfo = ({ isEditing = false }: Props) => {
             <Select
               size="large"
               placeholder="Raça"
-              selectedIndex={selectLeaderEthnicity}
-              value={StringUtils.capitalize(
-                enumLeaderEthnicity[selectLeaderEthnicity.row]
-              )}
+              selectedIndex={
+                leaderEthnicity
+                  ? new IndexPath(enumLeaderEthnicity.indexOf(leaderEthnicity))
+                  : undefined
+              }
+              value={
+                leaderEthnicity
+                  ? StringUtils.capitalize(
+                      enumLeaderEthnicity[selectLeaderEthnicity.row]
+                    )
+                  : undefined
+              }
               onSelect={(index) => {
                 setLeaderEthnicity(index as IndexPath);
                 const selected = enumLeaderEthnicity[(index as IndexPath).row];
@@ -197,10 +210,18 @@ const LeaderInfo = ({ isEditing = false }: Props) => {
             <Select
               size="large"
               placeholder="Sexo"
-              selectedIndex={selectLeaderGender}
-              value={StringUtils.capitalize(
-                enumLeaderGender[selectLeaderGender.row]
-              )}
+              selectedIndex={
+                leaderGender
+                  ? new IndexPath(enumLeaderGender.indexOf(leaderGender))
+                  : undefined
+              }
+              value={
+                leaderGender
+                  ? StringUtils.capitalize(
+                      enumLeaderGender[selectLeaderGender.row]
+                    )
+                  : undefined
+              }
               onSelect={(index) => {
                 setLeaderGender(index as IndexPath);
                 const selected = enumLeaderGender[(index as IndexPath).row];
@@ -239,10 +260,22 @@ const LeaderInfo = ({ isEditing = false }: Props) => {
             <Select
               size="large"
               placeholder="Grau de escolaridade"
-              selectedIndex={selectLeaderEducationalLevel}
-              value={StringUtils.capitalize(
-                enumLeaderEducationalLevel[selectLeaderEducationalLevel.row]
-              )}
+              selectedIndex={
+                leaderEducationalLevel
+                  ? new IndexPath(
+                      enumLeaderEducationalLevel.indexOf(leaderEducationalLevel)
+                    )
+                  : undefined
+              }
+              value={
+                leaderEducationalLevel
+                  ? StringUtils.capitalize(
+                      enumLeaderEducationalLevel[
+                        selectLeaderEducationalLevel.row
+                      ]
+                    )
+                  : undefined
+              }
               onSelect={(index) => {
                 setLeaderEducationalLevel(index as IndexPath);
                 const selected =
@@ -298,16 +331,19 @@ const LeaderInfo = ({ isEditing = false }: Props) => {
           </View>
         )}
       />
-        <Controller
+      <Controller
         control={control}
         name="leaderSufferedRacism"
         render={({ field: { onChange, value } }) => (
-          <CheckBox style={{ marginTop: 16 }} checked={value} onChange={onChange}>
+          <CheckBox
+            style={{ marginTop: 16 }}
+            checked={value}
+            onChange={onChange}
+          >
             O(A) Senhor(a) já sofreu algum tipo de racismo?
           </CheckBox>
         )}
       />
-      
     </View>
   );
 };

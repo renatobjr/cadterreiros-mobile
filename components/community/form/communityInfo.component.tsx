@@ -140,41 +140,45 @@ const CommunityInfo = ({ isEditing = false }: Props) => {
         name="religiousSpacePositionName"
         rules={{ required: "O cargo da liderança é obrigatório" }}
         render={({ field: { onChange, value } }) => (
-          <Select
-            size="large"
-            placeholder="Cargo da liderança"
-            selectedIndex={
-              religiousPositionName
-                ? new IndexPath(
-                    enumReligiousPosiontionName.indexOf(religiousPositionName)
-                  )
-                : undefined
-            }
-            value={
-              religiousPositionName
-                ? StringUtils.capitalize(religiousPositionName)
-                : undefined
-            }
-            onSelect={(index) => {
-              const selected =
-                enumReligiousPosiontionName[(index as IndexPath).row];
-              onChange(selected);
-            }}
-            status={errors.religiousSpacePositionName ? "danger" : "basic"}
-            caption={() =>
-              (errors.religiousSpacePositionName as any)?.message ? (
-                <CapitionError
-                  message={(errors.religiousSpacePositionName as any)?.message}
-                />
-              ) : (
-                <></>
-              )
-            }
-          >
-            {enumReligiousPosiontionName.map((type, index) => (
-              <SelectItem key={index} title={type} />
-            ))}
-          </Select>
+          <View>
+            <Select
+              size="large"
+              placeholder="Cargo da liderança"
+              selectedIndex={
+                religiousPositionName
+                  ? new IndexPath(
+                      enumReligiousPosiontionName.indexOf(religiousPositionName)
+                    )
+                  : undefined
+              }
+              value={
+                religiousPositionName
+                  ? StringUtils.capitalize(religiousPositionName)
+                  : undefined
+              }
+              onSelect={(index) => {
+                const selected =
+                  enumReligiousPosiontionName[(index as IndexPath).row];
+                onChange(selected);
+              }}
+              status={errors.religiousSpacePositionName ? "danger" : "basic"}
+              caption={() =>
+                (errors.religiousSpacePositionName as any)?.message ? (
+                  <CapitionError
+                    message={
+                      (errors.religiousSpacePositionName as any)?.message
+                    }
+                  />
+                ) : (
+                  <></>
+                )
+              }
+            >
+              {enumReligiousPosiontionName.map((type, index) => (
+                <SelectItem key={index} title={type} />
+              ))}
+            </Select>
+          </View>
         )}
       />
 
@@ -263,7 +267,7 @@ const CommunityInfo = ({ isEditing = false }: Props) => {
           </Select>
         )}
       />
-      
+
       <Text style={{ marginTop: 8 }} category="p1">
         Além da língua portuguesa, outra língua é utilizada nas práticas e no
         dia a dia desta casa?
