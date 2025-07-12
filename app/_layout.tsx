@@ -5,6 +5,12 @@ import { useFonts } from "expo-font";
 import { Slot, SplashScreen, Stack } from "expo-router";
 import { useEffect } from "react";
 
+import moment from 'moment';
+import 'moment/locale/pt-br';
+import 'react-native-get-random-values';
+
+moment.locale('pt-br');
+
 SplashScreen.preventAutoHideAsync();
 
 const RootLayout = () => {

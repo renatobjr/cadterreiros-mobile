@@ -55,7 +55,7 @@ const ViewCommunity = () => {
 
   return (
     <Layout level="4" style={styles.container}>
-      {!isLoading && !currentCommunity ? (
+      {isLoading || !currentCommunity ? (
         <View style={styles.spinnerContainer}>
           <Loading />
         </View>

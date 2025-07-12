@@ -40,8 +40,8 @@ const Signin = () => {
     formState: { errors },
   } = useForm({
     defaultValues: {
-      email: "",
-      password: "",
+      email: "danilonegrovida@gmail.com",
+      password: "teste",
     },
   });
   const [secureTextEntry, setSecureTextEntry] = useState(true);

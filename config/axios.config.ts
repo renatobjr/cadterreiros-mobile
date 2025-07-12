@@ -16,9 +16,6 @@ api.interceptors.request.use(
       config.headers["X-Access-Token"] = `Bearer ${token}`;
     }
 
-    console.log("Request to:", config.url);
-    console.log("Headers:", config.headers);
-
     return config;
   },
   (error) => Promise.reject(error)

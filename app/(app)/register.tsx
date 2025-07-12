@@ -2,6 +2,7 @@ import ReligiousCommunityForm from "@/components/common/religiousCommunityForm.c
 
 const Register = () => {
   return <ReligiousCommunityForm />;
+
 };
 
 export default Register;

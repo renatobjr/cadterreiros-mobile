@@ -5,6 +5,7 @@ const CommunityLayout = () => {
     <Stack>
       <Stack.Screen name="[id]/view" options={{ title: "Visualizar Comunidade" }} />
       <Stack.Screen name="[id]/edit" options={{ title: "Editar Comunidade" }} />
+      <Stack.Screen name="[id]/upload-main-picture" options={{ title: "Carregar Foto da Comunidade" }} />
     </Stack>
   )
 };

@@ -22,6 +22,14 @@ const religiousCommunitiesService = {
     return response.data;
   },
 
+  createReligiousCommunity: async (payload: any) => {
+    const response = await ApiConfig.post(
+      `${religiousCommunitiesURL}/create-religious-community`,
+      payload
+    );
+    return response.data;
+  },
+
   uploadMainPicture: async (id: string, file: any) => {
     const formData = new FormData();
     formData.append("file", {

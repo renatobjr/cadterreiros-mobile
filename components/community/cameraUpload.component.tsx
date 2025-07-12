@@ -52,13 +52,6 @@ const CameraUpload = ({ communityId, onUploaded }: Props) => {
         type: "image/jpeg",
       };
 
-      console.log('file', {
-        communityId,
-        file
-      });
-
-      console.log('communityId', communityId);
-
       await religiousCommunitiesService.uploadMainPicture(communityId, file);
       ToastAndroid.show("Imagem enviada com sucesso", ToastAndroid.SHORT);
       onUploaded();
@@ -81,16 +74,24 @@ const CameraUpload = ({ communityId, onUploaded }: Props) => {
   };
 
   return (
-    <Layout style={styles.container}>
+    <Layout level="4" style={styles.container}>
       <Text
         category="h6"
-        style={{ fontWeight: "500", marginBottom: 8, alignSelf: "center" }}
+        style={{ fontWeight: "500", marginBottom: 8, textAlign: "center" }}
       >
         Este terreiro foi mapeado com sucesso, mas ainda falta uma foto, voce
-        pode adicionar uma!
+        pode adicionar uma! Mas antes de tirar a foto, leia as dicas abaixo:
       </Text>
+
+      <Text style={{ textAlign: "center", fontSize: 14 }}>
+        1. A foto deve ser clara e com boa qualidade;{"\n"}
+        2. A imagem deve ser uma foto da fachada da Comunidade;{"\n"}
+        3. Posicione o smartphone na posição paisagem;{"\n"}
+        4. Não esqueça de verificar sua internet antes de tirar a foto.{"\n"}
+      </Text>
+
       <Button accessoryLeft={CameraIcon} status="danger" onPress={openCamera}>
-        Atualizar Foto
+        Adicionar Foto
       </Button>
 
       <Modal visible={cameraOpen} animationType="slide">
@@ -135,7 +136,13 @@ const CameraUpload = ({ communityId, onUploaded }: Props) => {
 export default CameraUpload;
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16, gap: 16 },
+  container: {
+    flex: 1,
+    padding: 16,
+    gap: 16,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   cameraContainer: {
     flex: 1,
     backgroundColor: "#000",

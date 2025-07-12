@@ -1,51 +1,29 @@
-import Ionicons from "@expo/vector-icons/Ionicons";
-import {
-  Card,
-  CheckBox,
-  Input,
-  Layout,
-  List,
-  ListItem,
-  Spinner,
-  Text,
-} from "@ui-kitten/components";
-import { useState } from "react";
-import { Controller, useForm } from "react-hook-form";
-import {
-  KeyboardAvoidingView,
-  Platform,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import religiousCommunitiesService from "@/service/religiousCommunities.service";
+import { useReligiousCommunityStore } from "@/store/religiousCommunityStore";
+import { Button, Layout, Spinner } from "@ui-kitten/components";
+import { router } from "expo-router";
+import "moment/locale/pt-br";
+import React from "react";
+import { FormProvider, useForm } from "react-hook-form";
+import { ImageProps, StyleSheet, View } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import Authorization from "../community/form/authorization.component";
+import CommunityGoogleApiLocalization from "../community/form/communityGoogleApiLocalization.component";
+import CommunityInfo from "../community/form/communityInfo.component";
+import LeaderInfo from "../community/form/leaderInfo.component";
 
 type Props = {
-  id?: string | string[] | undefined;
   isEditing?: boolean;
 };
 
-const ReligiousCommunityForm = ({
-  id = undefined,
-  isEditing = false,
-}: Props) => {
-  const [addressInput, setAddressInput] = useState("");
-  const [predictions, setPredictions] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [showPredictions, setShowPredictions] = useState(false);
+const ReligiousCommunityForm = ({ isEditing = false }: Props) => {
+  const {setCurrentCommunity, currentCommunity} = useReligiousCommunityStore();
+  const [isLoading, setIsLoading] = React.useState(false);
 
-  const setPlatform = Platform.OS === "ios" ? "padding" : "position";
-
-  // Chave da API fornecida pelo usuário
-  const GOOGLE_API_KEY = "AIzaSyDUsN2b7eBnkeG78j3Fc71fkketGKrGcGU";
-
-  const {
-    control,
-    handleSubmit,
-    setError,
-    setValue,
-    formState: { errors },
-  } = useForm({
+  const methods = useForm({
+    mode: "onSubmit",
     defaultValues: {
+      searchAddress: "",
       authorization: true,
       communityGoogleApiLocalization: {
         lat: 0,
@@ -76,7 +54,7 @@ const ReligiousCommunityForm = ({
         email: "",
       },
       leaderEthnicity: "",
-      leaderSexOrientation: "",
+      leaderGender: "",
       leaderEducationalLevel: "",
       leaderSocialProgram: "",
       leaderSufferedRacism: false,
@@ -84,221 +62,62 @@ const ReligiousCommunityForm = ({
     },
   });
 
-  const fetchAddressPredictions = async (input: string) => {
-    if (!input || input.length < 3) {
-      setPredictions([]);
-      setShowPredictions(false);
+  const LoadingIndicator = (props: ImageProps): React.ReactElement => (
+    <View style={[props.style, styles.indicator]}>
+      <Spinner status="basic" size="small" />
+    </View>
+  );
+
+  const onSubmit = async (data: any) => {
+    setIsLoading(true);
+    setCurrentCommunity(data);
+
+    const response = await religiousCommunitiesService.createReligiousCommunity(data);
+
+    if (response.status) {
+      router.push(`/community/${response.data}/upload-main-picture`);
       return;
     }
-
-    setIsLoading(true);
-
-    try {
-      const url = `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${encodeURIComponent(
-        input
-      )}&key=${GOOGLE_API_KEY}&language=pt-BR&components=country:br&types=address`;
-
-      const response = await fetch(url);
-      const data = await response.json();
-
-      if (data.status === "OK") {
-        setPredictions(data.predictions || []);
-        setShowPredictions(true);
-      } else {
-        console.error("Erro na API:", data.status, data.error_message);
-        setPredictions([]);
-        setShowPredictions(false);
-      }
-    } catch (error) {
-      console.error("Erro ao buscar predições:", error);
-      setPredictions([]);
-      setShowPredictions(false);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const fetchPlaceDetails = async (placeId: string) => {
-    setIsLoading(true);
-    try {
-      const url = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&key=${GOOGLE_API_KEY}&language=pt-BR&fields=name,formatted_address,geometry,address_components`;
-
-      const response = await fetch(url);
-      const data = await response.json();
-
-      if (data.status === "OK") {
-        const details = data.result;
-        handleAddressSelection(details);
-      } else {
-        console.error("Erro ao buscar detalhes:", data.status);
-      }
-    } catch (error) {
-      console.error("Erro ao buscar detalhes:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleAddressSelection = (details: any) => {
-    const lat = details.geometry?.location?.lat || 0;
-    const lng = details.geometry?.location?.lng || 0;
-
-    setValue("communityGoogleApiLocalization", {
-      lat: lat,
-      long: lng,
-    });
-
-    const addressComponents = details.address_components || [];
-    let street = "";
-    let number = "";
-    let neighborhood = "";
-    let city = "";
-    let state = "";
-    let zipcode = "";
-
-    addressComponents.forEach((component: any) => {
-      const types = component.types;
-
-      if (types.includes("street_number")) {
-        number = component.long_name;
-      } else if (types.includes("route")) {
-        street = component.long_name;
-      } else if (
-        types.includes("sublocality") ||
-        types.includes("neighborhood")
-      ) {
-        neighborhood = component.long_name;
-      } else if (types.includes("administrative_area_level_2")) {
-        city = component.long_name;
-      } else if (types.includes("administrative_area_level_1")) {
-        state = component.long_name;
-      } else if (types.includes("postal_code")) {
-        zipcode = component.long_name;
-      }
-    });
-
-    setValue("communityAddress", {
-      fullAddress: details.formatted_address || "",
-      street: street,
-      number: number,
-      neighborhood: neighborhood,
-      city: city,
-      state: state,
-      zipcode: zipcode,
-    });
-    setShowPredictions(false);
-    setPredictions([]);
-  };
-
-  let timeoutId: number | null = null;
-
-  const handleAddressInputChange = (text: string) => {
-    setAddressInput(text);
-
-    // Debounce para evitar muitas requisições
-    if (timeoutId !== null) {
-      clearTimeout(timeoutId);
-    }
-    timeoutId = setTimeout(() => {
-      fetchAddressPredictions(text);
-    }, 500);
-  };
-
-  const handlePredictionPress = (prediction: any) => {
-    setAddressInput(prediction.description);
-    fetchPlaceDetails(prediction.place_id);
-  };
-
-  const clearAddressInput = () => {
-    setAddressInput("");
-    setPredictions([]);
-    setShowPredictions(false);
     setIsLoading(false);
-    setValue("communityGoogleApiLocalization", {
-      lat: 0,
-      long: 0,
-    });
-    setValue("communityAddress", {
-      fullAddress: "",
-      street: "",
-      number: "",
-      neighborhood: "",
-      city: "",
-      state: "",
-      zipcode: "",
-    });
   };
-
-  const ClearButton = (): React.ReactElement => (
-    <TouchableOpacity onPress={clearAddressInput}>
-      <Ionicons name="close-outline" size={20} />
-    </TouchableOpacity>
-  );
-
-  const renderPredictionItem = ({ item }: { item: any }) => (
-    <ListItem
-      title={() => <Text style={{ fontWeight: "bold" }}>{item.structured_formatting?.main_text}</Text>}
-      description={() => <Text>{item.structured_formatting?.secondary_text}</Text>}
-      onPress={() => handlePredictionPress(item)}
-    />
-  );
 
   return (
-    <KeyboardAvoidingView style={styles.container}>
-      <Layout level="4">
-        <View id="authorization">
-          <Text style={styles.formTitle}>Autorização de Cadastramento</Text>
-          <Controller
-            control={control}
-            name="authorization"
-            rules={{ required: "Autorização é obrigatória" }}
-            render={({ field: { onChange, value } }) => (
-              <CheckBox checked={value} onChange={onChange}>
-                O(A) Senhor(a) autoriza a inclusão da sua casa no Cadastramento?
-              </CheckBox>
-            )}
-          />
-        </View>
+    <KeyboardAwareScrollView
+      style={styles.scrollView}
+      contentContainerStyle={styles.contentContainer}
+      enableOnAndroid={true}
+      extraScrollHeight={20}
+      keyboardShouldPersistTaps="handled"
+    >
+      <FormProvider {...methods}>
+        <Layout level="4" style={styles.container}>
+          <Authorization isEditing={isEditing} />
+          <CommunityGoogleApiLocalization isEditing={isEditing} />
+          <CommunityInfo isEditing={isEditing} />
+          <LeaderInfo isEditing={isEditing} />
 
-        <View id="communityLocation">
-          <Text category="h6" style={styles.formTitle}>
-            Parte I: Localização da Casa Tradicional de Matriz Africana/Terreiro
-          </Text>
-
-          <Input
-            placeholder="Digite o endereço da comunidade"
-            value={addressInput}
-            onChangeText={handleAddressInputChange}
-            accessoryRight={addressInput.length > 0 ? ClearButton : undefined}
-            style={{ marginBottom: 8 }}
+          <Button
+            accessoryRight={isLoading ? () => <LoadingIndicator /> : undefined}
+            status="danger"
+            style={{ marginTop: 40 }}
             disabled={isLoading}
-          />
-
-          {isLoading && (
-            <View style={{ alignItems: "center", marginVertical: 8 }}>
-              <Spinner size="small" />
-              <Text category="c1" appearance="hint" style={{ marginTop: 4 }}>
-                Buscando endereços...
-              </Text>
-            </View>
-          )}
-
-          {showPredictions && predictions.length > 0 && (
-            <Card style={{ marginTop: 8, maxHeight: 250 }}>
-              <List
-                data={predictions}
-                renderItem={renderPredictionItem}
-                keyExtractor={(item) => item.place_id}
-              />
-            </Card>
-          )}
-        </View>
-      </Layout>
-    </KeyboardAvoidingView>
+            onPress={methods.handleSubmit(onSubmit)}
+          >
+            Cadastrar
+          </Button>
+        </Layout>
+      </FormProvider>
+    </KeyboardAwareScrollView>
   );
 };
 
 const styles = StyleSheet.create({
+  scrollView: {
+    flex: 1,
+  },
+  contentContainer: {
+    flexGrow: 1,
+  },
   container: {
     backgroundColor: "#E4E9F2",
     flex: 1,
@@ -306,15 +125,22 @@ const styles = StyleSheet.create({
     alignContent: "center",
     justifyContent: "flex-start",
   },
+  section: {
+    gap: 8,
+  },
   placesContainer: {
-    flex: 1,
-    minHeight: 300,
+    padding: 16,
+    borderRadius: 8,
   },
   formTitle: {
     fontWeight: "700",
     fontSize: 16,
     marginTop: 16,
     marginBottom: 8,
+  },
+  indicator: {
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
 
