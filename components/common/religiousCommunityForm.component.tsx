@@ -108,7 +108,6 @@ const ReligiousCommunityForm = ({ isEditing = false, onSubmit }: Props) => {
           ? `${imageUrl}/${imagePath}`
           : null;
       setImageSource(imageSource);
-      console.log(communityData);
 
       methods.reset(communityData as unknown as any);
     }
