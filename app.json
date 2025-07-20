@@ -4,7 +4,7 @@
     "slug": "cadterreiros-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/cad.logo.png",
     "scheme": "cadterreirosmobile",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -18,7 +18,7 @@
         "INTENET"
       ],
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/images/cad.color.png",
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true
