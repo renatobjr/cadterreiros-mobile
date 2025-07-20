@@ -25,7 +25,8 @@
       "permissions": [
         "android.permission.CAMERA",
         "android.permission.RECORD_AUDIO"
-      ]
+      ],
+      "package": "com.suporte_cciao.cadterreirosmobile"
     },
     "web": {
       "bundler": "metro",
