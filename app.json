@@ -18,7 +18,7 @@
         "INTENET"
       ],
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/cad.color.png",
+        "foregroundImage": "./assets/images/cad.logo.png",
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
