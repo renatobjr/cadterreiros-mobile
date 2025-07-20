@@ -14,12 +14,15 @@ type State = {
 };
 
 type Actions = {
+  getToken: () => Promise<string | null>;
   login: (
     email: string,
     password: string
   ) => Promise<{ status: boolean; data: any }>;
   logout: () => Promise<void>;
-  register: (email: string, password: string) => Promise<void>;
+  generateTokenUser: (email: string, isFromForget: boolean) => Promise<{status: boolean, data: any}>;
+  verifyOTP: (token: string, otp: string) => Promise<{status: boolean, data: any}>;
+  setPassword: (token: string, password: string, fullname: string) => Promise<{status: boolean, data: any}>;
   checkAuth: () => void;
 };
 
@@ -29,6 +32,11 @@ export const useAuthStore = create<State & Actions>((set) => ({
   isAuth: false,
   isLoading: false,
   error: undefined,
+
+  getToken: async () => {
+    const token = await AsyncStorage.getItem(TOKEN_KEY);
+    return token;
+  },
 
   login: async (email: string, password: string) => {
     try {
@@ -82,18 +90,35 @@ export const useAuthStore = create<State & Actions>((set) => ({
     });
   },
 
-  register: async (email: string, password: string) => {
-    // try {
-    //   set({ isLoading: true });
-    //   const response = await authService.register(email, password);
-    //   const { user, token } = response.data;
-    //   await AsyncStorage.setItem(TOKEN_KEY, token);
-    //   await AsyncStorage.setItem(USER_KEY, JSON.stringify(user));
-    //   set({ user, token, isAuth: true, isLoading: false, error: undefined });
-    // } catch (error) {
-    //   console.error("Erro no registro:", error);
-    //   set({ isLoading: false, error: "Erro ao registrar" });
-    // }
+  generateTokenUser: async (email: string, isFromForget: boolean) => {
+    set({ isLoading: true });
+
+    const response = await authService.generateUserToken(email, isFromForget);
+    
+    if(response.status) {
+      await AsyncStorage.setItem(TOKEN_KEY, response.data);
+    }
+
+    set({ isLoading: false });
+    return response;
+  },
+
+  verifyOTP: async (token: string, otp: string) => {
+    set({ isLoading: true });
+
+    const response = await authService.verifyOTP(token, otp);
+    
+    set({ isLoading: false });
+    return response;
+  },
+
+  setPassword: async (token: string, password: string, fullname: string) => {
+    set({ isLoading: true });
+
+    const response = await authService.setPassword(token, password, fullname);
+    
+    set({ isLoading: false });
+    return response;
   },
 
   checkAuth: async () => {

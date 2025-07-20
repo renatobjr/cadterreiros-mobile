@@ -1,4 +1,6 @@
 import CapitionError from "@/components/common/capitionError.component";
+import ToastSystem from "@/components/common/toast.component";
+import { EToastType } from "@/enums/toastType.enum";
 import { useAuthStore } from "@/store/authStore";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import {
@@ -6,16 +8,14 @@ import {
   Input,
   Layout,
   Spinner,
-  Text,
   useTheme,
 } from "@ui-kitten/components";
 import { TouchableWithoutFeedback } from "@ui-kitten/components/devsupport";
 import { Image } from "expo-image";
 import { router } from "expo-router";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
-  Animated,
   ImageProps,
   KeyboardAvoidingView,
   Platform,
@@ -36,12 +36,11 @@ const Signin = () => {
   const {
     control,
     handleSubmit,
-    setError,
     formState: { errors },
   } = useForm({
     defaultValues: {
-      email: "danilonegrovida@gmail.com",
-      password: "teste",
+      email: "",
+      password: "",
     },
   });
   const [secureTextEntry, setSecureTextEntry] = useState(true);
@@ -59,10 +58,7 @@ const Signin = () => {
       return;
     }
 
-    setError("root", {
-      type: "manual",
-      message: "Ops! Email ou senha inválidos.",
-    });
+    ToastSystem(EToastType.ERROR, "Ops!", "Email ou senha inválida");
   };
 
   const toogleSecureEntry = (): void => {
@@ -73,7 +69,7 @@ const Signin = () => {
     <Ionicons name="mail-outline" size={20} />
   );
 
-  const renderEyeIcon = ({ props }: any): React.ReactElement => (
+  const renderEyeIcon = (): React.ReactElement => (
     <TouchableWithoutFeedback onPress={toogleSecureEntry}>
       <Ionicons
         name={secureTextEntry ? "eye-off-outline" : "eye-outline"}
@@ -88,125 +84,105 @@ const Signin = () => {
     </View>
   );
 
-  const errorToastAnimated = useRef(new Animated.Value(0)).current;
-  useEffect(() => {
-    if (errors.root) {
-      Animated.timing(errorToastAnimated, {
-        toValue: 1,
-        duration: 300,
-        useNativeDriver: true,
-      }).start();
-    } else {
-      Animated.timing(errorToastAnimated, {
-        toValue: 0,
-        duration: 300,
-        useNativeDriver: true,
-      }).start();
-    }
-  }, [errors.root, errorToastAnimated]);
-
-  const translateY = errorToastAnimated.interpolate({
-    inputRange: [0, 1],
-    outputRange: [-50, 0],
-  });
-
-  const opacity = errorToastAnimated.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0, 1],
-  });
-
   return (
-    <KeyboardAvoidingView behavior={setPlatform} style={styles.container}>
-      <Layout level="3">
-        <Image
-          contentFit="contain"
-          style={styles.imageContainer}
-          source={loginImage}
-        />
-        {errors.root && (
-          <Animated.View
-            style={[
-              styles.errorToast,
-              {
-                backgroundColor: theme["color-danger-200"],
-                transform: [{ translateY }],
-                opacity,
-              },
-            ]}
+    <>
+      <KeyboardAvoidingView behavior={setPlatform} style={styles.container}>
+        <Layout level="4">
+          <Image
+            contentFit="contain"
+            style={styles.imageContainer}
+            source={loginImage}
+          />
+          <Controller
+            control={control}
+            name="email"
+            rules={{ required: "Email é obrigatório" }}
+            render={({ field: { onChange, value } }) => (
+              <Input
+                value={value}
+                accessoryRight={renderEmailIcon}
+                onChangeText={onChange}
+                keyboardType="email-address"
+                size="large"
+                status={errors.email ? "danger" : "basic"}
+                caption={() => (
+                  <CapitionError message={errors.email?.message} />
+                )}
+                placeholder="Email"
+              />
+            )}
+          />
+          <Controller
+            control={control}
+            name="password"
+            rules={{ required: "Senha é obrigatório" }}
+            render={({ field: { onChange, value } }) => (
+              <Input
+                style={{ marginTop: 16 }}
+                value={value}
+                accessoryRight={renderEyeIcon}
+                secureTextEntry={secureTextEntry}
+                onChangeText={onChange}
+                size="large"
+                status={errors.password ? "danger" : "basic"}
+                caption={() => (
+                  <CapitionError message={errors.password?.message} />
+                )}
+                placeholder="Password"
+              />
+            )}
+          />
+        </Layout>
+        <Layout level="4" style={styles.buttonContainer}>
+          <Button
+            accessoryRight={isLoad ? () => <LoadingIndicator /> : undefined}
+            status="info"
+            style={{ marginBottom: 16 }}
+            onPress={handleSubmit(handlerLogin)}
           >
-            <Text
-              style={{
-                color: theme["color-danger-900"],
-                ...styles.errorToastText,
-              }}
-            >
-              {errors.root.message}
-            </Text>
-          </Animated.View>
-        )}
-        <Controller
-          control={control}
-          name="email"
-          rules={{ required: "Email é obrigatório" }}
-          render={({ field: { onChange, value } }) => (
-            <Input
-              value={value}
-              accessoryRight={renderEmailIcon}
-              onChangeText={onChange}
-              keyboardType="email-address"
-              size="large"
-              status={errors.email ? "danger" : "basic"}
-              caption={() => <CapitionError message={errors.email?.message} />}
-              placeholder="Email"
-            />
-          )}
-        />
-        <Controller
-          control={control}
-          name="password"
-          rules={{ required: "Senha é obrigatório" }}
-          render={({ field: { onChange, value } }) => (
-            <Input
-              style={{ marginTop: 16 }}
-              value={value}
-              accessoryRight={renderEyeIcon}
-              secureTextEntry={secureTextEntry}
-              onChangeText={onChange}
-              size="large"
-              status={errors.password ? "danger" : "basic"}
-              caption={() => (
-                <CapitionError message={errors.password?.message} />
-              )}
-              placeholder="Password"
-            />
-          )}
-        />
-      </Layout>
-      <Layout level="3" style={styles.buttonContainer}>
-        <Button
-          accessoryRight={isLoad ? () => <LoadingIndicator /> : undefined}
-          status="danger"
-          style={{ marginBottom: 16 }}
-          onPress={handleSubmit(handlerLogin)}
-        >
-          Login
-        </Button>
-        <Button
-          status="info"
-          style={{ marginBottom: 16 }}
-          onPress={() => router.navigate("/(auth)/forgot-password")}
-        >
-          Esqueci minha senha
-        </Button>
-      </Layout>
+            Login
+          </Button>
+          <Button
+            status="info"
+            appearance="outline"
+            style={{ marginBottom: 16 }}
+            onPress={() =>
+              router.navigate({
+                pathname: "/set-email-form",
+                params: {
+                  isFromForget: "true",
+                },
+              })
+            }
+          >
+            Esqueci minha senha
+          </Button>
+          <Button
+            status="info"
+            appearance="outline"
+            style={{ marginBottom: 16 }}
+            onPress={() =>
+              router.navigate({
+                pathname: "/set-email-form",
+                params: {
+                  isFromForget: "false",
+                },
+              })
+            }
+          >
+            Primeiro Acesso
+          </Button>
+        </Layout>
 
-      <StatusBar barStyle="dark-content" backgroundColor={"#fff"} />
-    </KeyboardAvoidingView>
+        <StatusBar barStyle="dark-content" backgroundColor={"#fff"} />
+      </KeyboardAvoidingView>
+    </>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
+    backgroundColor: "#E4E9F2",
     flex: 1,
     padding: 16,
     alignContent: "center",

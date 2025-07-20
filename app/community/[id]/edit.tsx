@@ -1,12 +1,14 @@
 import { IReligiousCommunity } from "@/@types/religiousCommunity.type";
 import Loading from "@/components/common/loading.component";
 import ReligiousCommunityForm from "@/components/common/religiousCommunityForm.component";
+import ToastSystem from "@/components/common/toast.component";
+import { EToastType } from "@/enums/toastType.enum";
 import religiousCommunitiesService from "@/service/religiousCommunities.service";
 import { useReligiousCommunityStore } from "@/store/religiousCommunityStore";
 import { Layout } from "@ui-kitten/components";
 import { router, useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
-import { StyleSheet, ToastAndroid, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 
 const EditCommunity = () => {
   const { fecthCommunity, isLoading } = useReligiousCommunityStore();
@@ -25,7 +27,7 @@ const EditCommunity = () => {
         }
       } catch (error) {
         console.error("Erro ao obter comunidade:", error);
-        ToastAndroid.show("Ops. Algo deu errado", ToastAndroid.SHORT);
+        ToastSystem(EToastType.ERROR, "Ops!", "Erro ao obter comunidade");
       }
     }
   }, [id, fecthCommunity]);
@@ -37,7 +39,7 @@ const EditCommunity = () => {
     )
 
     if (response.status) {
-      ToastAndroid.show("Comunidade atualizada com sucesso", ToastAndroid.SHORT);
+      ToastSystem(EToastType.SUCCESS, "Sucesso", "Comunidade atualizada com sucesso");
       setCurrentCommunity(response.data);
       router.push("/(app)/home")
     }

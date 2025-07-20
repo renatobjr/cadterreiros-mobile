@@ -1,4 +1,6 @@
+import ToastSystem from "@/components/common/toast.component";
 import CameraUpload from "@/components/community/cameraUpload.component";
+import { EToastType } from "@/enums/toastType.enum";
 import { router, useLocalSearchParams } from "expo-router";
 
 const UploadMainPicture = () => {
@@ -7,7 +9,10 @@ const UploadMainPicture = () => {
   return (
     <CameraUpload
       communityId={id as string}
-      onUploaded={() => router.push("/(app)/home")}
+      onUploaded={() => {
+        ToastSystem(EToastType.SUCCESS, "Sucesso", "Casa/Ilê cadastrada com sucesso");
+        router.push("/(app)/home");
+      }}
     />
   );
 };

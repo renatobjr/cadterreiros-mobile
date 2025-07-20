@@ -8,6 +8,7 @@ import { useEffect } from "react";
 import moment from 'moment';
 import 'moment/locale/pt-br';
 import 'react-native-get-random-values';
+import Toast from "react-native-toast-message";
 
 moment.locale('pt-br');
 
@@ -60,6 +61,7 @@ const RootLayout = () => {
           <Slot />
         )}
       </Stack>
+      <Toast />
     </ApplicationProvider>
   );
 };

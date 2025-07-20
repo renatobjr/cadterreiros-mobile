@@ -1,4 +1,5 @@
 import { IReligiousCommunity } from "@/@types/religiousCommunity.type";
+import { EToastType } from "@/enums/toastType.enum";
 import { useReligiousCommunityStore } from "@/store/religiousCommunityStore";
 import { Button, Layout, Spinner } from "@ui-kitten/components";
 import { Image } from "expo-image";
@@ -6,13 +7,14 @@ import { useLocalSearchParams } from "expo-router";
 import "moment/locale/pt-br";
 import React, { useCallback, useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { ImageProps, StyleSheet, ToastAndroid, View } from "react-native";
+import { ImageProps, StyleSheet, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import CameraUpload from "../community/cameraUpload.component";
 import Authorization from "../community/form/authorization.component";
 import CommunityGoogleApiLocalization from "../community/form/communityGoogleApiLocalization.component";
 import CommunityInfo from "../community/form/communityInfo.component";
 import LeaderInfo from "../community/form/leaderInfo.component";
+import ToastSystem from "./toast.component";
 
 type Props = {
   isEditing?: boolean;
@@ -93,7 +95,7 @@ const ReligiousCommunityForm = ({ isEditing = false, onSubmit }: Props) => {
         }
       } catch (error) {
         console.error("Erro ao obter comunidade:", error);
-        ToastAndroid.show("Ops. Algo deu errado", ToastAndroid.SHORT);
+        ToastSystem(EToastType.ERROR, "Ops!", "Erro ao obter comunidade");
       }
     }
   }, [id, fecthCommunity, setCurrentCommunity]);
