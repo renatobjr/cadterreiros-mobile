@@ -21,7 +21,11 @@
         "foregroundImage": "./assets/images/cad.color.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -51,6 +55,13 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "dde2604d-c916-42bc-a4be-2f1ddc96a886"
+      }
+    },
+    "owner": "suporte_cciao"
   }
 }
