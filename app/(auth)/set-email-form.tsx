@@ -26,6 +26,7 @@ const SetEmailForm = () => {
         isFromForget === "true"
           ? "Esqueceu sua senha?"
           : "Cadastrar minha senha",
+      headerLeft: () => null
     });
   });
 
@@ -35,7 +36,7 @@ const SetEmailForm = () => {
     formState: { errors },
   } = useForm({
     defaultValues: {
-      email: "renato.bonfim.jr@cciao.org",
+      email: "",
     },
   });
 
