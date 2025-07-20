@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "cadterreiros-mobile",
+    "name": "Cadterreiros",
     "slug": "cadterreiros-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/cad.logo.png",
+    "icon": "./assets/images/logo.png",
     "scheme": "cadterreirosmobile",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -18,7 +18,7 @@
         "INTENET"
       ],
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/cad.logo.png",
+        "foregroundImage": "./assets/images/logo.png",
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
