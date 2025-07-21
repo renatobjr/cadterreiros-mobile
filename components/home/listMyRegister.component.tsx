@@ -1,4 +1,3 @@
-// components/home/listMyRegisterItem.component.tsx
 import { ECensusStep } from "@/enums/censusStep.enum";
 import { ECommunityType } from "@/enums/religiousCommunityType.enum";
 import { EReligiousSpaceNation } from "@/enums/religiousSpaceNation.enum";
@@ -11,7 +10,8 @@ import {
   useTheme
 } from "@ui-kitten/components";
 import { router } from "expo-router";
-import { StyleSheet, View } from "react-native";
+import { useState } from "react";
+import { Modal, Pressable, StyleSheet, View } from "react-native";
 import Chip from "../common/chip.component";
 
 type Props = {
@@ -22,11 +22,13 @@ type Props = {
     censusStep: ECensusStep;
     religiousSpaceNation: EReligiousSpaceNation;
     communityType: ECommunityType;
+    rejectedReason?: string;
   };
 };
 
 const ListMyRegisterItem = ({ item }: Props) => {
   const theme = useTheme();
+  const [isDialogVisible, setIsDialogVisible] = useState(false);
 
   const EyeIcon = (): React.ReactElement<IconElement> => (
     <Ionicons color="#fff" name="eye-outline" size={20} />
@@ -41,23 +43,32 @@ const ListMyRegisterItem = ({ item }: Props) => {
       case ECensusStep.PENDING:
         return (
           <Chip
-            chipColor={theme["color-warning-100"]}
+            chipColor={theme["color-warning-300"]}
             fontColor={theme["color-warning-900"]}
             label="Pendente"
           />
         );
       case ECensusStep.REJECTED:
         return (
-          <Chip
-            chipColor={theme["color-danger-100"]}
-            fontColor={theme["color-danger-900"]}
-            label="Rejeitado"
-          />
+          <View style={style.rejectedContainer}>
+            <Chip
+              chipColor={theme["color-danger-200"]}
+              fontColor={theme["color-danger-900"]}
+              label="Rejeitado"
+            />
+            <Pressable onPress={() => setIsDialogVisible(true)}>
+              <Chip
+                chipColor={theme["color-danger-900"]}
+                fontColor={theme["color-danger-100"]}
+                label="Ver motivos"
+              />
+            </Pressable>
+          </View>
         );
       default:
         return (
           <Chip
-            chipColor={theme["color-success-100"]}
+            chipColor={theme["color-success-300"]}
             fontColor={theme["color-success-900"]}
             label="Aprovado"
           />
@@ -66,32 +77,55 @@ const ListMyRegisterItem = ({ item }: Props) => {
   };
 
   return (
-    <ListItem
-      title={() => (
-        <Text style={style.title}>{item.religiousSpaceName}</Text>
-      )}
-      description={() => (
-        <Text style={style.description}>{item.religiousSpaceNation}</Text>
-      )}
-      accessoryRight={() => (
-        <View style={style.actions}>
-          <RenderStatusChips status={item.censusStep} />
-          <Button
-            appearance="filled"
-            size="tiny"
-            accessoryRight={EyeIcon}
-            onPress={() => router.push(`/community/${item.id}/view`)}
-          />
-          <Button
-            appearance="filled"
-            size="tiny"
-            accessoryRight={EditIcon}
-            onPress={() => router.push(`/community/${item.id}/edit`)}
-          />
+    <>
+      <ListItem
+        title={() => (
+          <Text style={style.title}>{item.religiousSpaceName}</Text>
+        )}
+        description={() => (
+          <Text style={style.description}>{item.religiousSpaceNation}</Text>
+        )}
+        accessoryRight={() => (
+          <View style={style.actions}>
+            <RenderStatusChips status={item.censusStep} />
+            <Button
+              appearance="filled"
+              size="tiny"
+              accessoryRight={EyeIcon}
+              onPress={() => router.push(`/community/${item.id}/view`)}
+            />
+            <Button
+              appearance="filled"
+              size="tiny"
+              accessoryRight={EditIcon}
+              onPress={() => router.push(`/community/${item.id}/edit`)}
+            />
+          </View>
+        )}
+        style={{ backgroundColor: "#fff", marginTop: 8 }}
+      />
+
+      <Modal
+        transparent
+        visible={isDialogVisible}
+        animationType="fade"
+        onRequestClose={() => setIsDialogVisible(false)}
+      >
+        <View style={style.modalBackground}>
+          <View style={style.dialogContainer}>
+            <Text category="s1" style={{ marginBottom: 12, fontWeight: "700" }}>
+              Motivos da Rejeição
+            </Text>
+            <Text appearance="hint" style={{ marginBottom: 16, color: "#000" }}>
+              {item.rejectedReason}
+            </Text>
+            <Button size="small" onPress={() => setIsDialogVisible(false)}>
+              Fechar
+            </Button>
+          </View>
         </View>
-      )}
-      style={{ backgroundColor: "#fff", marginTop: 8 }}
-    />
+      </Modal>
+    </>
   );
 };
 
@@ -116,6 +150,24 @@ const style = StyleSheet.create({
     gap: 8,
     flexDirection: "row",
     marginLeft: 10,
+  },
+  rejectedContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
+  modalBackground: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  dialogContainer: {
+    backgroundColor: "white",
+    padding: 20,
+    width: "85%",
+    borderRadius: 12,
+    elevation: 4,
   },
 });
 

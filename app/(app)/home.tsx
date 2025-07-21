@@ -17,7 +17,9 @@ const Home = () => {
     isLoading: loadingResources,
     listByUserId: list,
   } = useReligiousCommunityStore();
+
   const [total, setTotal] = useState<any>({});
+  const [refreshing, setRefreshing] = useState(false); // novo estado
 
   const loadCounts = useCallback(async () => {
     if (user?.id) {
@@ -42,12 +44,18 @@ const Home = () => {
     }
   }, [fetchListFromUserId, user?.id]);
 
+  const handleRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await Promise.all([loadCounts(), loadListFromUserId()]);
+    setRefreshing(false);
+  }, [loadCounts, loadListFromUserId]);
+
   useEffect(() => {
     loadCounts();
     loadListFromUserId();
   }, [loadCounts, loadListFromUserId]);
 
-  if (loadingResources) {
+  if (loadingResources && !refreshing) {
     return (
       <Layout level="4" style={styles.loadingContainer}>
         <Loading />
@@ -61,10 +69,20 @@ const Home = () => {
         data={list}
         keyExtractor={(item) => item.id || Math.random().toString()}
         contentContainerStyle={styles.content}
+        refreshing={refreshing}
+        onRefresh={handleRefresh}
         ListHeaderComponent={() => (
           <>
             <Text category="h5">Olá {user?.fullname}</Text>
-            <Text style={{ marginTop: 16, marginBottom: 16, lineHeight: 24, fontWeight: "500" }} category="p1">
+            <Text
+              style={{
+                marginTop: 16,
+                marginBottom: 16,
+                lineHeight: 24,
+                fontWeight: "500",
+              }}
+              category="p1"
+            >
               Aqui você pode acompanhar o andamento dos seus cadastros, além de
               ser a principal fonte de informação sobre o Mapemanto.
             </Text>
