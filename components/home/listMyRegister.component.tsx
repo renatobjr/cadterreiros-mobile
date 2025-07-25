@@ -88,12 +88,12 @@ const ListMyRegisterItem = ({ item }: Props) => {
         accessoryRight={() => (
           <View style={style.actions}>
             <RenderStatusChips status={item.censusStep} />
-            <Button
+            {/* <Button
               appearance="filled"
               size="tiny"
               accessoryRight={EyeIcon}
               onPress={() => router.push(`/community/${item.id}/view`)}
-            />
+            /> */}
             <Button
               appearance="filled"
               size="tiny"
