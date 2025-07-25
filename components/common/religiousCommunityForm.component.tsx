@@ -135,6 +135,9 @@ const ReligiousCommunityForm = ({ isEditing = false, onSubmit }: Props) => {
                     contentFit="cover"
                     onError={() => setImageError(true)}
                   />
+                  <Button style={{ marginTop: 16 }} onPress={() => setImageSource(null)}>
+                    Atualizar Imagem
+                  </Button>
                 </View>
               ) : (
                 <CameraUpload

@@ -198,7 +198,7 @@ const LeaderInfo = ({ isEditing = false }: Props) => {
       />
 
       <Text style={{ marginTop: 8 }} category="p1">
-        O(A) Senhor(a) pode informar seu sexo?
+        O(A) Senhor(a) pode informar seu sexo (Não perguntar)?
       </Text>
       <Controller
         control={control}
